@@ -1,4 +1,5 @@
-﻿using EmployeeManagement.API.Models;
+﻿using EmployeeManagement.Application.Exceptions;
+using EmployeeManagement.API.Models;
 using FluentValidation;
 using System.Text.Json;
 
@@ -42,6 +43,14 @@ namespace EmployeeManagement.API.Middleware
                     case KeyNotFoundException:
 
                         context.Response.StatusCode = StatusCodes.Status404NotFound;
+
+                        response.Message = ex.Message;
+
+                        break;
+
+                    case DuplicateRecordException:
+
+                        context.Response.StatusCode = StatusCodes.Status409Conflict;
 
                         response.Message = ex.Message;
 

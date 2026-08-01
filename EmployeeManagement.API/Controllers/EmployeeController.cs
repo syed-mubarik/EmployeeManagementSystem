@@ -41,9 +41,13 @@ namespace EmployeeManagement.API.Controllers
                 new { id = employee.Id },
                 employee);
         }
-        [HttpPut]
-        public async Task<IActionResult> Update(UpdateEmployeeDto dto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id,UpdateEmployeeDto dto)
         {
+            if(id != dto.Id)
+            {
+                return BadRequest("Route Id and DTo Id do not match.");
+            }
             await _employeeService.UpdateAsync(dto);
             return NoContent();
         }
