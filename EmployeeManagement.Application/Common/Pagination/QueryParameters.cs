@@ -1,6 +1,6 @@
 ﻿namespace EmployeeManagement.Application.Common.Pagination
 {
-    public class QueryParameters
+    public abstract class QueryParameters
     {
         private const int MaxPageSize = 100;
 

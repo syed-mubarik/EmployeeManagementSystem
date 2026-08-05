@@ -40,7 +40,12 @@ namespace EmployeeManagement.API.Middleware
 
                         break;
 
-                    case KeyNotFoundException:
+                    case BadRequestException:
+                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Message = ex.Message;
+                     break;
+
+                    case NotFoundException:
 
                         context.Response.StatusCode = StatusCodes.Status404NotFound;
 

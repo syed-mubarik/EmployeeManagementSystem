@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EmployeeManagement.Application.Common.Pagination;
 using EmployeeManagement.Application.DTOs.Employees;
+using EmployeeManagement.Application.Exceptions;
 using EmployeeManagement.Application.Interfaces.Repositories;
 using EmployeeManagement.Application.Interfaces.Services;
 using EmployeeManagement.Domain.Entities;
@@ -39,7 +40,7 @@ namespace EmployeeManagement.Application.Services.Employees
             // Check if employee exists
             if (employee == null)
             {
-                throw new KeyNotFoundException("Employee not found.");
+                throw new NotFoundException("Employee not found.");
             }
 
             // Convert Entity to DTO
@@ -96,7 +97,7 @@ namespace EmployeeManagement.Application.Services.Employees
            
             if (employee == null)
             {
-                throw new KeyNotFoundException("Employee not found.");
+                throw new NotFoundException("Employee not found.");
             }
 
             //if (employee.IsDeleted)
@@ -115,7 +116,7 @@ namespace EmployeeManagement.Application.Services.Employees
             var employee = await _unitOfWork.Employees.GetByIdAsync(id);
            
             if(employee == null) {
-                throw new KeyNotFoundException("Employee Not Found");
+                throw new NotFoundException("Employee Not Found");
         }
             if (employee.Status == EmployeeStatus.Inactive)
             {

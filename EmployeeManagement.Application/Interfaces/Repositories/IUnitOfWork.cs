@@ -5,6 +5,7 @@
         IEmployeeRepository Employees { get; }
 
         IDepartmentRepository Departments { get; }
+        IDesignationRepository Designations { get; }
         Task<int> SaveChangesAsync();
     }
 }

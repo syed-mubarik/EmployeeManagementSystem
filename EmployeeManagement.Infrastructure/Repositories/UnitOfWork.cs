@@ -9,12 +9,14 @@ namespace EmployeeManagement.Infrastructure.Repositories
 
         public IEmployeeRepository Employees { get; }
         public IDepartmentRepository Departments { get; }
+        public IDesignationRepository Designations { get; }
 
-        public UnitOfWork(ApplicationDbContext context,IEmployeeRepository employeeRepository, IDepartmentRepository departments)
+        public UnitOfWork(ApplicationDbContext context,IEmployeeRepository employeeRepository, IDepartmentRepository departments, IDesignationRepository designations)
         {
             _context = context;
             Employees = employeeRepository;
             Departments = departments;
+            Designations = designations;
         }
 
         public async Task<int> SaveChangesAsync()

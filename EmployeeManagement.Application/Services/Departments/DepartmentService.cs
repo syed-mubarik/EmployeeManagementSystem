@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EmployeeManagement.Application.Common.Pagination;
 using EmployeeManagement.Application.DTOs.Department;
+using EmployeeManagement.Application.DTOs.Employees;
 using EmployeeManagement.Application.Exceptions;
 using EmployeeManagement.Application.Interfaces.Repositories;
 using EmployeeManagement.Application.Interfaces.Services;
@@ -14,10 +15,15 @@ namespace EmployeeManagement.Application.Services.Departments
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IValidator<CreateDepartmentDto> _createValidator;
+        private readonly IValidator<UpdateDepartmentDto> _updateValidator;
+        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper,IValidator<CreateDepartmentDto>createValidator,
+                                 IValidator<UpdateDepartmentDto> updateValidator)
         {
             _unitOfWork = unitOfWork;       
             _mapper = mapper;
+            _createValidator = createValidator;
+             _updateValidator = updateValidator;
         }
         public async Task<DepartmentDto> CreateAsync(CreateDepartmentDto dto)
         {
@@ -63,18 +69,23 @@ namespace EmployeeManagement.Application.Services.Departments
            
             if (department == null)
             {
-                throw new KeyNotFoundException("Department not Found.");
+                throw new NotFoundException("Department not Found.");
             }
             return _mapper.Map<DepartmentDetailDto>(department);
         }
 
-        public async Task<bool> UpdateAsync(UpdateDepartmentDto dto)
+        public async Task UpdateAsync(UpdateDepartmentDto dto)
         {
-             // Check if department exists
+            var validationresult = await _updateValidator.ValidateAsync(dto);
+            if (!validationresult.IsValid)
+            {
+                throw new ValidationException(validationresult.Errors);
+            }
+            // Check if department exists
             var department = await _unitOfWork.Departments.GetByIdAsync(dto.Id);
             if (department == null)
             {
-                throw new KeyNotFoundException("Department not Found.");
+                throw new NotFoundException("Department not Found.");
             }
            
             // Check duplicate name
@@ -87,18 +98,18 @@ namespace EmployeeManagement.Application.Services.Departments
             _mapper.Map(dto, department);
 
             await _unitOfWork.SaveChangesAsync();
-            return true;
+            
         }
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             var department = await _unitOfWork.Departments.GetByIdAsync(id);
             if (department == null)
             {
-                throw new KeyNotFoundException("Department Not Found.");
+                throw new NotFoundException("Department Not Found.");
             }
             department.IsDeleted = true;
             await _unitOfWork.SaveChangesAsync();
-            return true;
+            
         }
     }
     

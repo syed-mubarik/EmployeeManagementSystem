@@ -10,7 +10,7 @@ namespace EmployeeManagement.Application.Interfaces.Services
         Task<DepartmentDetailDto?> GetByIdAsync(int id);
         Task<DepartmentDto> CreateAsync(CreateDepartmentDto dto);
 
-        Task<bool> UpdateAsync(UpdateDepartmentDto dto);
-        Task<bool> DeleteAsync(int id);
+        Task UpdateAsync(UpdateDepartmentDto dto);
+        Task    DeleteAsync(int id);
     }
 }

@@ -1,15 +1,15 @@
-using EmployeeManagement.Persistence.Context;
-using Microsoft.EntityFrameworkCore;
-using EmployeeManagement.Application.Mappings;
-using EmployeeManagement.Application.Interfaces.Repositories;
-using EmployeeManagement.Infrastructure.Repositories;
-using EmployeeManagement.Application.Services.Employees;
-using EmployeeManagement.Application.Interfaces.Services;
-using FluentValidation;
-using EmployeeManagement.Application.Validators.Employees;
 using EmployeeManagement.API.Middleware;
-using EmployeeManagement.Application.Validators.Department;
+using EmployeeManagement.Application.Interfaces.Repositories;
+using EmployeeManagement.Application.Interfaces.Services;
+using EmployeeManagement.Application.Mappings;
 using EmployeeManagement.Application.Services.Departments;
+using EmployeeManagement.Application.Services.Designations;
+using EmployeeManagement.Application.Services.Employees;
+using EmployeeManagement.Application.Validators.Employees;
+using EmployeeManagement.Infrastructure.Repositories;
+using EmployeeManagement.Persistence.Context;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,10 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// register the validators:
+// register the validators:  FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEmployeeValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateDepartmentValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdateDepartmentValidator>();
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -33,10 +31,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IDesignationRepository, DesignationRepository>();
 
 // Services
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IDesignationService, DesignationService>();
 
 // AutoMapper
 //By scanning the assembly, all profiles are registered automatically.

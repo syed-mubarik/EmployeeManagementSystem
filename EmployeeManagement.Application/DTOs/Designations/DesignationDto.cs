@@ -1,0 +1,10 @@
+﻿
+namespace EmployeeManagement.Application.DTOs.Designation
+{
+    public  class DesignationDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Description { get; set; }
+    }
+}

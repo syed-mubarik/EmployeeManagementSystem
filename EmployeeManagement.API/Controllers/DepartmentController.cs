@@ -7,10 +7,10 @@ namespace EmployeeManagement.API.Controllers
 {
     [Route("api/[Controller]")]
     [ApiController]
-    public class DepartmentController : ControllerBase
+    public class DepartmentsController : ControllerBase
     {
         private readonly IDepartmentService _departmentService;
-        public DepartmentController(IDepartmentService departmentService)
+        public DepartmentsController(IDepartmentService departmentService)
         {
             _departmentService = departmentService;
         }
@@ -27,7 +27,7 @@ namespace EmployeeManagement.API.Controllers
 
             return Ok(result);
         }
-        [HttpGet ("{id}")]
+        [HttpGet ("{id:int}")]  // This route only matches integers.prevent 0
         public async Task<IActionResult> GetById(int id)
         {
             var departments = await _departmentService.GetByIdAsync(id);
@@ -43,7 +43,7 @@ namespace EmployeeManagement.API.Controllers
                 nameof(GetById),
                 new { id = department.Id }, department);
         }
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task <IActionResult> Update(int id, UpdateDepartmentDto dto)
         {
             if (id != dto.Id)
@@ -53,7 +53,7 @@ namespace EmployeeManagement.API.Controllers
             await _departmentService.UpdateAsync(dto);
             return NoContent();
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _departmentService.DeleteAsync(id);

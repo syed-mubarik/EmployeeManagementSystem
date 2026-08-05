@@ -52,7 +52,9 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 case "createdat":
                     query = queryParameters.Descending
                           ? query.OrderByDescending(d => d.CreatedAt)
-                          : query.OrderBy(d => d.CreatedAt);
+                                  .ThenByDescending(e => e.Id)
+                          : query.OrderBy(d => d.CreatedAt)
+                                  .ThenBy(e => e.Id);
                     break;
 
                 default:

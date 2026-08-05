@@ -7,11 +7,11 @@ namespace EmployeeManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
 
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeesController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
         }
@@ -24,7 +24,7 @@ namespace EmployeeManagement.API.Controllers
         //    return Ok(employees);
         //}
         
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var employee = await _employeeService.GetByIdAsync(id);
@@ -41,7 +41,7 @@ namespace EmployeeManagement.API.Controllers
                 new { id = employee.Id },
                 employee);
         }
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id,UpdateEmployeeDto dto)
         {
             if(id != dto.Id)
@@ -51,7 +51,7 @@ namespace EmployeeManagement.API.Controllers
             await _employeeService.UpdateAsync(dto);
             return NoContent();
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _employeeService.DeleteAsync(id);
