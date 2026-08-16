@@ -1,7 +1,5 @@
 ﻿using EmployeeManagement.Domain.Common;
 using EmployeeManagement.Domain.Enums;
-using static System.Formats.Asn1.AsnWriter;
-
 namespace EmployeeManagement.Domain.Entities
 {
     public class Employee : BaseEntity

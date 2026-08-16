@@ -6,6 +6,7 @@
 
         IDepartmentRepository Departments { get; }
         IDesignationRepository Designations { get; }
+        IRefreshTokenRepository RefreshTokens { get; }
         Task<int> SaveChangesAsync();
     }
 }
