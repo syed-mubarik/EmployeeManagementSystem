@@ -230,7 +230,7 @@ Git / GitHub
 Author
 
 Syed Mubarik Ali
+## Connect With Me
 
-GitHub
-
-LinkedIn
+- [LinkedIn](https://www.linkedin.com/in/syed-mubarik)
+- [GitHub](https://github.com/syed-mubarik)
