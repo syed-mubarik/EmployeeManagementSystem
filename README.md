@@ -1,62 +1,70 @@
-# Employee Management System
+# Employee Management System API
 
-A RESTful Employee Management System built using ASP.NET Core 8 Web API and Clean Architecture.
-
-## Technologies
-
-- ASP.NET Core 8
-- C#
-- Entity Framework Core
-- SQL Server
-- Clean Architecture
-- Repository Pattern
-- Unit of Work
-- ASP.NET Core Identity
-- AutoMapper
-- FluentValidation
-- Swagger / OpenAPI
-- JWT Authentication
-- Refresh Token Rotation
-- Role-Based Authorization (Coming Soon)
+A production-style Employee Management REST API built with **ASP.NET Core 8 Web API** and **Clean Architecture**, demonstrating secure authentication, role-based authorization, database-driven business modules, and maintainable backend architecture.
 
 ## Project Structure
 
-```text
--EmployeeManagement.API
--EmployeeManagement.Application
--EmployeeManagement.Domain
--EmployeeManagement.Infrastructure
--EmployeeManagement.Persistence
-Features
-Employee Management
--Employee CRUD
--Department Management
--Designation Management
--Validation
--Pagination
--Searching
--Sorting
--Soft Delete
--Global Exception Handling
--Swagger Documentation
--Authentication
--User Registration
--User Login
--ASP.NET Core Identity
--Password Hashing
--JWT Access Tokens
--Access Token Expiration
--Refresh Tokens
--Refresh Token Hashing
--Refresh Token Rotation
--Refresh Token Revocation
--Logout / Token Revocation
-Authorization
--Role-Based Authorization (Coming Soon)
--Claims-Based Authorization (Coming Soon)
-Authentication Flow
+- `EmployeeManagement.API`
+- `EmployeeManagement.Application`
+- `EmployeeManagement.Domain`
+- `EmployeeManagement.Infrastructure`
+- `EmployeeManagement.Persistence`
+
+## Features
+
+### Employee Management
+
+- Employee CRUD operations
+- Department management
+- Designation management
+- Input validation
+- Pagination
+- Searching
+- Sorting
+- Soft delete
+- Global exception handling
+- Swagger / OpenAPI documentation
+
+### Authentication
+
+- User registration
+- User login
+- ASP.NET Core Identity
+- Password hashing
+- JWT access tokens
+- Access token expiration
+- Refresh tokens
+- Refresh token hashing
+- Refresh token rotation
+- Refresh token revocation
+- Logout / token revocation
+
+### Authorization
+
+- Role-Based Authorization
+- Claims-Based Authorization
+
+> Authorization features are currently being implemented and refined.
+
+## Key Highlights
+
+- Clean Architecture with clear separation of concerns
+- Repository and Unit of Work patterns
+- Entity Framework Core with SQL Server
+- JWT-based authentication
+- Role-based authorization
+- Refresh token hashing, rotation, and revocation
+- Global exception handling through middleware
+- FluentValidation for request validation
+- AutoMapper for DTO and entity mapping
+- Pagination, searching, sorting, and soft delete
+- Swagger / OpenAPI API documentation
+
+## Authentication Flow
 
 The application uses short-lived JWT access tokens together with longer-lived refresh tokens.
+
+```text
 Login
   |
   +--> Access Token
@@ -79,10 +87,14 @@ Configure User Secrets
 
 After cloning the repository, run:
 dotnet user-secrets init --project EmployeeManagement.API
-Then configure the JWT signing key:
+
+Configure the JWT signing key:
+
 dotnet user-secrets set "Jwt:Key" "YOUR_DEVELOPMENT_SECRET_KEY" --project EmployeeManagement.API
-You can verify the configured secrets with:
+
+Verify the configured secrets:
 dotnet user-secrets list --project EmployeeManagement.API
+
 Non-sensitive JWT configuration is stored in appsettings.json:
 
 "Jwt": {
@@ -91,12 +103,13 @@ Non-sensitive JWT configuration is stored in appsettings.json:
   "AccessTokenExpirationMinutes": 15,
   "RefreshTokenExpirationDays": 7
 }
+
 For production environments, secrets should be provided through environment variables or a dedicated secret-management service such as Azure Key Vault.
 
 How to Run
-1. Clone the repository
+1. Clone the Repository
 git clone https://github.com/syed-mubarik/EmployeeManagementSystem.git
-2. Configure the database
+2. Configure the Database
 
 Update the connection string in:
 
@@ -109,10 +122,8 @@ Example:
 }
 3. Configure JWT User Secret
 dotnet user-secrets init --project EmployeeManagement.API
-
-
 dotnet user-secrets set "Jwt:Key" "YOUR_DEVELOPMENT_SECRET_KEY" --project EmployeeManagement.API
-4. Apply database migrations
+4. Apply Database Migrations
 
 From the solution root:
 
@@ -124,19 +135,18 @@ Or run the project through Visual Studio.
 
 6. Open Swagger
 
-Once the application is running, open the Swagger URL displayed by the application, for example:
+Once the application is running, open the Swagger URL displayed by the application.
+
+Example:
 
 https://localhost:7002/swagger
 Database Migrations
 
 Migrations are managed using the .NET Entity Framework CLI.
 
-Create a migration:
-
+Create a Migration
 dotnet ef migrations add MigrationName --project EmployeeManagement.Persistence --startup-project EmployeeManagement.API
-
-Apply migrations:
-
+Apply Migrations
 dotnet ef database update --project EmployeeManagement.Persistence --startup-project EmployeeManagement.API
 Architecture
 
@@ -158,44 +168,69 @@ The application follows Clean Architecture principles:
                             SQL Server
 API
 
-Contains controllers, middleware, dependency injection configuration, and API configuration.
+Contains:
+
+Controllers
+Middleware
+Dependency Injection configuration
+API configuration
 
 Application
 
 Contains:
 
--DTOs
--Interfaces
--Application services
--Validators
--AutoMapper profiles
--Configuration models
+DTOs
+Interfaces
+Application services
+Validators
+AutoMapper profiles
+Configuration models
+
 Domain
 
 Contains:
 
--Entities
--Domain-level models
--Core business concepts
+Entities
+Domain-level models
+Core business concepts
+
 Infrastructure
 
 Contains implementations of:
 
--Repositories
--Authentication services
--JWT services
--Refresh token services
+Repositories
+Authentication services
+JWT services
+Refresh token services
+
 Persistence
 
 Contains:
 
--Entity Framework Core DbContext
--Entity configurations
--Database migrations
+Entity Framework Core DbContext
+Entity configurations
+Database migrations
+
+Technologies
+C#
+ASP.NET Core 8
+ASP.NET Core Web API
+Entity Framework Core
+SQL Server
+ASP.NET Core Identity
+JWT Authentication
+Role-Based Authorization
+Clean Architecture
+Repository Pattern
+Unit of Work
+FluentValidation
+AutoMapper
+Swagger / OpenAPI
+Git / GitHub
 Author
 
-Syed Mubarik
+Syed Mubarik Ali
 
-GitHub:
+GitHub
 
-https://github.com/syed-mubarik/EmployeeManagementSystem
+LinkedIn
