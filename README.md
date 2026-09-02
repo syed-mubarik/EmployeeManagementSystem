@@ -43,8 +43,14 @@ A production-style Employee Management REST API built with **ASP.NET Core 8 Web 
 
 - Role-Based Authorization
 - Claims-Based Authorization
-
-> Authorization features are currently being implemented and refined.
+- Policy-Based Authorization
+- Resource-Based Authorization
+- Role management with complete CRUD operations
+- Assign roles to users
+- Permission-based authorization
+- Assign permissions to roles
+- Assign permissions directly to users
+- Protected APIs using `[Authorize]`
 
 ## Key Highlights
 
@@ -52,7 +58,10 @@ A production-style Employee Management REST API built with **ASP.NET Core 8 Web 
 - Repository and Unit of Work patterns
 - Entity Framework Core with SQL Server
 - JWT-based authentication
-- Role-based authorization
+- Role-based, claims-based, policy-based, and resource-based authorization
+- Complete role management with role assignment
+- Permission-based authorization for users and roles
+- ASP.NET Core Identity integration
 - Refresh token hashing, rotation, and revocation
 - Global exception handling through middleware
 - FluentValidation for request validation
@@ -77,7 +86,7 @@ Login
           +--> Used to obtain a new access token
           +--> Rotated after use
           +--> Can be revoked
-Configuration
+## Configuration
 
 Sensitive configuration such as the JWT signing key should not be stored in appsettings.json or committed to source control.
 
@@ -220,6 +229,9 @@ SQL Server
 ASP.NET Core Identity
 JWT Authentication
 Role-Based Authorization
+Claims-Based Authorization
+Policy-Based Authorization
+Resource-Based Authorization
 Clean Architecture
 Repository Pattern
 Unit of Work
@@ -227,10 +239,7 @@ FluentValidation
 AutoMapper
 Swagger / OpenAPI
 Git / GitHub
+
 Author
 
 Syed Mubarik Ali
-## Connect With Me
-
-- [LinkedIn](https://www.linkedin.com/in/syed-mubarik)
-- [GitHub](https://github.com/syed-mubarik)
