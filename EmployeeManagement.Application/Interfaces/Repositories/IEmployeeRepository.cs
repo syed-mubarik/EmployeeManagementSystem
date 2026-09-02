@@ -9,5 +9,8 @@ namespace EmployeeManagement.Application.Interfaces.Repositories
 
         Task<IEnumerable<Employee>> GetAllEmployeesWithDetailsAsync();
         Task<PagedResult<Employee>> GetEmployeesAsync(EmployeeQueryParameters queryParameters);
+        
+        // added this  for auth service register method
+        Task<bool> ExistsAsync(int id);
     }
 }

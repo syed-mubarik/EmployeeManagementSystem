@@ -120,7 +120,7 @@ namespace EmployeeManagement.Application.Services.Employees
         }
             if (employee.Status == EmployeeStatus.Inactive)
             {
-                throw new InvalidOperationException("Employee is already Inactive");
+                throw new BadRequestException("Employee is already Inactive");
             }
             employee.IsDeleted = true;
             employee.Status = EmployeeStatus.Inactive;
@@ -144,6 +144,34 @@ namespace EmployeeManagement.Application.Services.Employees
                 PageSize = employees.PageSize
             };
             return result;
+        }
+
+        // Get the actual Employee entity so authorization can use it as the resource.
+        public async Task<Employee?> GetEmployeeForAuthorizationAsync(int id)
+        {
+            return await _unitOfWork.Employees.GetEmployeeWithDetailsAsync(id);
+        }
+        public EmployeeDetailDto MapToDetailDto(Employee employee)
+        {
+            return _mapper.Map<EmployeeDetailDto>(employee);
+        }
+
+        public async Task UpdateSelfAsync(EmployeeSelfUpdateDto dto)
+        {
+            var employee = await _unitOfWork.Employees.GetByIdAsync(dto.Id);
+
+            if (employee == null)
+            {
+                throw new NotFoundException("Employee not found.");
+            }
+
+            employee.FirstName = dto.FirstName;
+            employee.LastName = dto.LastName;
+            employee.PhoneNumber = dto.PhoneNumber;
+            employee.DateOfBirth = dto.DateOfBirth;
+            employee.Gender = dto.Gender;
+
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

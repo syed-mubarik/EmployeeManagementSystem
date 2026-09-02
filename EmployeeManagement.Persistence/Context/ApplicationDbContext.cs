@@ -33,6 +33,21 @@ namespace EmployeeManagement.Persistence.Context
                     entry.Entity.UpdatedBy = "System";
                 }
             }
+
+            foreach (var entry in ChangeTracker.Entries<ApplicationUser>())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.CreatedBy = "System";
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                    entry.Entity.UpdatedBy = "System";
+                }
+            }
+
             return await base.SaveChangesAsync(cancellationToken);
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

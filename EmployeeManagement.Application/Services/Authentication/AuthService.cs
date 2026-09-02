@@ -4,6 +4,9 @@ using EmployeeManagement.Application.Interfaces.Repositories;
 using EmployeeManagement.Application.Interfaces.Services;
 using EmployeeManagement.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace EmployeeManagement.Application.Services.Authentication;
 
@@ -14,15 +17,17 @@ public class AuthService : IAuthService
     private readonly IJwtService _jwtService;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly RoleManager<IdentityRole> _roleManager;
     public AuthService(UserManager<ApplicationUser> userManager, IMapper mapper,
                        IJwtService jwtService, IRefreshTokenService refreshTokenService,
-                       IUnitOfWork unitOfWork)
+                       IUnitOfWork unitOfWork, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _mapper = mapper;
         _jwtService = jwtService;
         _refreshTokenService = refreshTokenService;
         _unitOfWork = unitOfWork;
+        _roleManager = roleManager;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
@@ -37,6 +42,35 @@ public class AuthService : IAuthService
                 Message = "Email already exists."
             };
         }
+
+        // Validate Employee if EmployeeId is supplied
+        if (request.EmployeeId.HasValue)
+        {
+            var employeeExists = await _unitOfWork.Employees.ExistsAsync(request.EmployeeId.Value);
+
+            if (!employeeExists)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = "Employee not found."
+                };
+            }
+       //     Prevent duplicate Employee accounts
+            var existingEmployeeUser = await _userManager.Users
+                .FirstOrDefaultAsync(u =>
+                    u.EmployeeId == request.EmployeeId.Value);
+
+            if (existingEmployeeUser != null)
+            {
+                return new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = "This employee already has a user account."
+                };
+            }
+        }
+
         request.Email = email;
         var user = _mapper.Map<ApplicationUser>(request);
 
@@ -81,7 +115,30 @@ public class AuthService : IAuthService
                 Message = "Invalid email or password."
             };
         }
-        var accessTokenResult = _jwtService.GenerateAccessToken(user);
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        var userClaims = await _userManager.GetClaimsAsync(user);
+
+        var roleClaims = new List<Claim>();
+
+        foreach (var roleName in roles)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+
+            if (role != null)
+            {
+                var claims = await _roleManager.GetClaimsAsync(role);
+
+                roleClaims.AddRange(claims);
+            }
+        }
+
+        var effectiveClaims = userClaims
+                              .Concat(roleClaims)
+                              .DistinctBy(c => new { c.Type, c.Value })
+                              .ToList();
+        var accessTokenResult = _jwtService.GenerateAccessToken(user, roles,effectiveClaims);
 
         var refreshToken = _refreshTokenService.GenerateToken();
 
@@ -145,7 +202,29 @@ public class AuthService : IAuthService
 
         var user = storedToken.User;
 
-        var accessTokenResult = _jwtService.GenerateAccessToken(user);
+        var roles = await _userManager.GetRolesAsync(user);
+        var userClaims = await _userManager.GetClaimsAsync(user);
+
+        var roleClaims = new List<Claim>();
+
+        foreach (var roleName in roles)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+
+            if (role != null)
+            {
+                var claims = await _roleManager.GetClaimsAsync(role);
+
+                roleClaims.AddRange(claims);
+            }
+        }
+
+        var effectiveClaims = userClaims
+                              .Concat(roleClaims)
+                              .DistinctBy(c => new { c.Type, c.Value })
+                              .ToList();
+
+        var accessTokenResult = _jwtService.GenerateAccessToken(user, roles, effectiveClaims);
 
         var newRefreshToken =   _refreshTokenService.GenerateToken();
 

@@ -19,14 +19,24 @@ public class JwtService : IJwtService
         _jwtSettings = jwtSettings.Value;
     }
 
-    public AccessTokenResultDto GenerateAccessToken(ApplicationUser user)
+    public AccessTokenResultDto GenerateAccessToken(ApplicationUser user,IList<string> roles, IList<Claim> effectiveClaims)
     {
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id),
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            new Claim(ClaimTypes.Name, user.UserName ?? string.Empty)
+            new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+            new Claim("EmployeeId", user.EmployeeId?.ToString() ?? string.Empty)
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+        foreach (var claim in effectiveClaims)
+        {
+            claims.Add(claim);
+        }
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_jwtSettings.Key));

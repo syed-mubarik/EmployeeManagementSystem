@@ -13,4 +13,5 @@ public class RegisterRequestDto
     public string Password { get; set; } = string.Empty;
 
     public string ConfirmPassword { get; set; } = string.Empty;
+    public int? EmployeeId { get; set; }
 }

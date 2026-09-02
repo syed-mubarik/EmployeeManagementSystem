@@ -90,6 +90,12 @@ namespace EmployeeManagement.Infrastructure.Repositories
             };
 
         }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Employees
+                .AnyAsync(e => e.Id == id && !e.IsDeleted);
+        }
         // Helper private query
         private IQueryable<Employee> GetEmployeeQuery()
         {

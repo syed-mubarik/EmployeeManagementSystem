@@ -13,10 +13,11 @@ namespace EmployeeManagement.API.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
-
-        public EmployeesController(IEmployeeService employeeService)
+        private readonly IAuthorizationService _authorizationService;
+        public EmployeesController(IEmployeeService employeeService, IAuthorizationService authorizationService)
         {
             _employeeService = employeeService;
+            _authorizationService = authorizationService;
         }
 
         //[HttpGet]
@@ -26,14 +27,35 @@ namespace EmployeeManagement.API.Controllers
 
         //    return Ok(employees);
         //}
-        
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var employee = await _employeeService.GetByIdAsync(id);
+            // Get the requested Employee
+            var employee = await _employeeService.GetEmployeeForAuthorizationAsync(id);
 
-            return Ok(employee);
+            if (employee == null)
+            {
+                return NotFound("Employee not found.");
+            }
+
+            // Authorize the current user against the Employee resource
+            var authorizationResult = await _authorizationService
+              //  .AuthorizeAsync(User, employee, "EmployeeOwner");
+                .AuthorizeAsync(User, employee, "EmployeeAccess");
+
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            // Employee is already loaded, so don't query the database again.
+            var employeeDto = _employeeService.MapToDetailDto(employee);
+
+            return Ok(employeeDto);
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateEmployeeDto dto)
         {
@@ -44,23 +66,78 @@ namespace EmployeeManagement.API.Controllers
                 new { id = employee.Id },
                 employee);
         }
+
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id,UpdateEmployeeDto dto)
         {
+
             if(id != dto.Id)
             {
                 return BadRequest("Route Id and DTo Id do not match.");
             }
+
+            var employee = await _employeeService.GetEmployeeForAuthorizationAsync(id);
+
+            if (employee == null)
+            {
+                return NotFound("Employee not found.");
+            }
+
+            var authorizationResult =   await _authorizationService.AuthorizeAsync(User,employee,"EmployeeAccess");
+
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            // Only Admin and HR Manager can perform full update
+            if (!User.IsInRole("Admin") &&  !User.IsInRole("HR Manager"))
+            {
+                return Forbid();
+            }
+
+            // Update logic comes here
             await _employeeService.UpdateAsync(dto);
             return NoContent();
         }
+
+        // Employee — self update
+        [HttpPut("{id:int}/self")]
+        public async Task<IActionResult> UpdateSelf(int id,EmployeeSelfUpdateDto dto)
+        {
+            if (id != dto.Id)
+            {
+                return BadRequest("Route Id and DTO Id do not match.");
+            }
+
+            var employee = await _employeeService.GetEmployeeForAuthorizationAsync(id);
+
+            if (employee == null)
+            {
+                return NotFound("Employee not found.");
+            }
+
+   var authorizationResult =await _authorizationService.AuthorizeAsync(User, employee, "EmployeeOwner");
+
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            await _employeeService.UpdateSelfAsync(dto);
+
+            return NoContent();
+        }
+
         [HttpDelete("{id:int}")]
+        [Authorize(Policy = "CanDeleteEmployee")]
         public async Task<IActionResult> Delete(int id)
         {
             await _employeeService.DeleteAsync(id);
             return NoContent();
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PagedResult<EmployeeDto>>> GetEmployees(
               [FromQuery] EmployeeQueryParameters queryParameters)
         {

@@ -19,6 +19,11 @@ using EmployeeManagement.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using EmployeeManagement.Application.Services.Authentication;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authorization;
+using EmployeeManagement.Application.Services.Roles;
+using EmployeeManagement.Application.Authorization.Permissions;
+using EmployeeManagement.Application.Authorization.Requirements;
+using EmployeeManagement.Application.Authorization.Handlers;
 
 
 
@@ -102,11 +107,35 @@ builder.Services.AddScoped<IDesignationService, DesignationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
-
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IPermissionService,PermissionService>();
 // AutoMapper
 //By scanning the assembly, all profiles are registered automatically.
 
 builder.Services.AddAutoMapper(typeof(EmployeeProfile).Assembly);
+
+// Create the Policy
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("EmployeeOwner", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.Requirements.Add(new EmployeeOwnerRequirement());
+    });
+    options.AddPolicy("CanDeleteEmployee", policy =>
+    {
+        policy.RequireClaim( "Permission",Permissions.EmployeeDelete);
+    });
+    options.AddPolicy("EmployeeAccess", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.Requirements.Add(new EmployeeAccessRequirement());
+    });
+});
+
+// Register the Handler
+builder.Services.AddScoped<IAuthorizationHandler, EmployeeOwnerHandler>();
+builder.Services.AddScoped<IAuthorizationHandler,EmployeeAccessHandler>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
